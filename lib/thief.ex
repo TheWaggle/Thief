@@ -11,7 +11,7 @@ defmodule Thief do
      package: [
        maintainers: ["YOSUKENAKAO.me"],
        licenses: ["MIT"],
-       links: %{"GitHub" => "https://github.com/ma2gedev/hex_sample"}
+       links: %{"GitHub" => "https://github.com/TheWaggle/Thief.git"}
      ],
      deps: deps]
   end
@@ -24,7 +24,7 @@ defmodule Thief do
   ## Examples
 
       iex> Thief.steal( "https://xxxx.com" )
-
+      [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
 
 
 
