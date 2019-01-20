@@ -1,31 +1,9 @@
 defmodule Thief do
+
   @moduledoc """
   Documentation for Thief.
   Scrape and get image link"
   """
-@description"""
-  Scrape and get image link.
-  """
-
-   def project do
-    [
-      app: :Thief,
-      version: "0.0.1",
-      elixir: "~> 1.0",
-      description: @description,
-      package: package(),
-      deps: deps()
-    ]
-    end
-
-def package do
-  [
-       maintainers: ["YOSUKENAKAO.me"],
-       licenses: ["MIT"],
-       links: %{"GitHub" => "https://github.com/TheWaggle/Thief.git"}
-  ]
-end
-
 
   @doc """
   your get link or images at URL.
@@ -34,7 +12,6 @@ end
 
       iex> Thief.steal( "https://xxxx.com" )
       [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
-
 
 
 """
@@ -66,7 +43,6 @@ end
     { :error , _body, _request_url } -> "Domain check Error img"
     end
   end
-
 
   # urlからリンクを取得する
   def getlink( url ) do
