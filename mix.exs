@@ -4,7 +4,7 @@ defmodule Thief.MixProject do
    def project() do
     [
       app: :thief,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.0",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -42,7 +42,6 @@ defmodule Thief.MixProject do
       {:floki, "~> 0.20.4"},
       {:httpoison, "~> 1.5"},
       {:ex_doc, "~> 0.19.2", only: :dev},
-      {:earmark, ">= 0.0.0"},
     ]
   end
 end

@@ -1,7 +1,6 @@
 {application,thief,
-             [{applications,[kernel,stdlib,elixir,logger,httpoison,ex_doc,
-                             floki]},
-              {description,"thief"},
+             [{applications,[kernel,stdlib,elixir,logger,httpoison,floki]},
+              {description," This Project is Scrape and get image links."},
               {modules,['Elixir.Thief']},
               {registered,[]},
-              {vsn,"0.1.0"}]}.
+              {vsn,"0.1.1"}]}.
