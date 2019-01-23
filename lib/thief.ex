@@ -5,6 +5,25 @@ defmodule Thief do
   Scrape and get image link"
   """
 
+    @doc """
+  your get link or images at URL.
+
+  ## Examples
+
+      iex> Thief.steal( "https://xxxx.com" , "/" )
+      [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
+
+
+"""
+
+  # urlからリンクを辿ってimgリストを取得する
+  def steal(domain, path) do
+    lists = steal_link( domain, path )
+    |> List.flatten
+    |> Enum.map( fn x -> getimage( x ) end )
+    {:ok, lists }
+  end
+
   @doc """
   your get link or images at URL.
 
@@ -13,13 +32,42 @@ defmodule Thief do
       iex> Thief.steal( "https://xxxx.com" , "/xxx/xxxx.html" )
       [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
 
+      iex> Thief.steal( "https://xxxx.com" )
+      [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
+
 
 """
 
   # urlからリンクを辿ってimgリストを取得する
-  def steal(domain, path) do
+  def steal_img(domain, path) do
     get_domain_link( domain, path )
     |> Enum.map( fn x -> getimage(x) end )
+  end
+
+  def steal_img( domain ) do
+    get_domain_link( domain )
+    |> Enum.map( fn x -> getimage(x) end )
+  end
+
+  @doc """
+    Thief.steal make a list of URLs and create a list of image downloads.
+    We only get lists within the domain.
+
+  ## Examples
+
+      iex> list = Thief.steal_link( domain, path )
+      [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
+
+  """
+
+  def steal_link(domain, path) do
+    get_domain_link( domain, path )
+    |> Enum.map( fn x -> getlink(x) end )
+  end
+
+  def steal_link( domain ) do
+    get_domain_link( domain )
+    |> Enum.map( fn x -> getlink(x) end )
   end
 
   @doc """
@@ -67,25 +115,24 @@ defmodule Thief do
 
   ## Examples
 
-    iex> Thief.get_domain_link(domain, path )
+    iex> Thief.get_domain_link( domain )
     [https://xxxx.com/img.png,https://xxxx.com/img.jpg]
 
 
   """
 
-  # img ドメインチェック
-  def get_domain_img( domain, path ) do
-     url = domain <> path
-    case get_html( url ) do
+  # url ドメインチェック
+  def get_domain_link( domain ) do
+    case get_html(domain) do
     { :ok , body } -> body
-    |>Floki.find("img")
-    |>Floki.attribute("src")
+    |>Floki.find("a")
+    |>Floki.attribute("href")
     |>Enum.filter(fn link -> String.contains?(link, domain) end )
-    { :error , _body } -> "Domain check Error img"
+    { :error , _body } -> "Domain check Error link"
     end
   end
 
-  @doc """
+    @doc """
       Collect the linked links and return the list.
 
 
@@ -97,11 +144,16 @@ defmodule Thief do
 
     """
 
-  # urlからリンクを取得する
-  def getlink( url ) do
-    case get_html(url) do
-     { :ok , body } -> get_links(body)
-     { :error , _body } -> "Error not URL"
+
+  # img ドメインチェック
+  def get_domain_img( domain, path ) do
+     url = domain <> path
+    case get_html( url ) do
+    { :ok , body } -> body
+    |>Floki.find("img")
+    |>Floki.attribute("src")
+    |>Enum.filter(fn link -> String.contains?(link, domain) end )
+    { :error , _body } -> "Domain check Error img"
     end
   end
 
@@ -117,15 +169,16 @@ defmodule Thief do
 
     """
 
-  # urlからimgのリストを取得する
-  def getimage( url ) do
+
+  # urlからリンクを取得する
+  def getlink( url ) do
     case get_html(url) do
-    { :ok , body } -> get_imgs(body)
+     { :ok , body } -> get_links(body)
      { :error , _body } -> "Error not URL"
     end
   end
 
-  @doc """
+    @doc """
       Collect the linked image links and return the list.
 
 
@@ -137,12 +190,13 @@ defmodule Thief do
 
     """
 
-  #bodyからimgのリスト取得
-  def get_imgs(body) do
-    body
-    |>Floki.find("img")
-    |>Floki.attribute("src")
-    |>Enum.filter(fn link -> String.contains?(link, ["http://", "https://"]) end )
+
+  # urlからimgのリストを取得する
+  def getimage( url ) do
+    case get_html(url) do
+      { :ok , body } -> get_imgs(body)
+      { :error , _body } -> "Error not URL"
+    end
   end
 
   @doc """
@@ -157,11 +211,12 @@ defmodule Thief do
 
     """
 
-  #bodyからlinkのリストを取得
-  def get_links(body) do
+
+  #bodyからimgのリスト取得
+  def get_imgs(body) do
     body
-    |>Floki.find("a")
-    |>Floki.attribute("href")
+    |>Floki.find("img")
+    |>Floki.attribute("src")
     |>Enum.filter(fn link -> String.contains?(link, ["http://", "https://"]) end )
   end
 
@@ -176,6 +231,24 @@ defmodule Thief do
 
     """
 
+  #bodyからlinkのリストを取得
+  def get_links(body) do
+    body
+    |>Floki.find("a")
+    |>Floki.attribute("href")
+    |>Enum.filter(fn link -> String.contains?(link, ["http://", "https://"]) end )
+  end
+
+    @doc """
+      Get body element of URL destination.
+
+
+      ## Examples
+
+      iex> { :ok, body } = Thief.get_html("https://github.com")
+      {:ok, "content=\"EB85:0" <> ..."}
+    """
+
   #URLのHTMLのbodyを取得
   def get_html(url) do
      case HTTPoison.get(url) do
@@ -188,15 +261,5 @@ defmodule Thief do
       {:error, _response } -> "Error not URL"
     end
   end
-
-    @doc """
-      Get body element of URL destination.
-
-
-      ## Examples
-
-      iex> { :ok, body } = Thief.get_html("https://github.com")
-      {:ok, "content=\"EB85:0" <> ..."}
-    """
 
 end

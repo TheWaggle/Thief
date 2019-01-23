@@ -3,4 +3,4 @@
               {description," This Project is Scrape and get image links."},
               {modules,['Elixir.Thief']},
               {registered,[]},
-              {vsn,"0.1.1"}]}.
+              {vsn,"0.1.2"}]}.
